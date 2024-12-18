@@ -264,7 +264,7 @@ bool builderMode=true;
 vector<Object*> playerInventory; // what player carries
 vector<Object*> allObjects; // All objects in game
 vector<Mobile*> allMobiles; // All mobiles in game
-map<int,Room*> rooms; // store rooms by ID, ptr to room object to store details
+map<int,Room*> rooms; // store rooms by ID, ptr to room object to store details // map stores keys in this case(int to store id, type of value for rooms that stores keys of type int)
 int currentRoomID=0;   // ID of current room player in
 Room* currentRoom=nullptr;
 int roomID=0; // ID counter for new rooms
