@@ -1,0 +1,62 @@
+/*Understanding Questions
+1. Basic Understanding of the Game Structure:
+Q1: What is the purpose of the cmdLower variable in the main loop, and why do we use transform(cmdLower.begin(), cmdLower.end(), cmdLower.begin(), ::tolower);?
+A1: The cmdLower variable stores the user's input in lowercase. The transform function is used to convert the input to lowercase to make the command comparison case-insensitive. This ensures that commands like "l" and "L" are treated the same.
+2. Command Processing:
+Q2: What happens when the player enters the command "q"?
+
+A2: The game will print "Quitting..." and exit the command loop, ending the program.
+
+Q3: Explain how the game handles the "r" command for renaming the current room. When does it allow renaming, and when does it block the action?
+
+A3: The "r" command allows renaming the current room only if the game is in builder mode (builderMode is true). If builder mode is off, the program will inform the player that builder mode is off and will not allow renaming.
+
+3. Room and Object Management:
+Q4: In the command "a", how does the program connect a new room to the current room, and how does it ensure the connection is valid?
+
+A4: The "a" command connects a new room by asking for a direction (N, S, E, W) in which to place the new room. The program checks if an exit already exists in that direction using conditions like currentRoom->north(). If an exit exists, the connection is not made. If not, the program proceeds to create a new room and establishes a connection in the chosen direction.
+
+Q5: Explain the process of creating a new room in the command "a" and how the new room is added to the rooms map.
+
+A5: When the "a" command is entered, the program first checks if the direction for the new exit is valid. Then it creates a new room (newRoom) with a default name and description. After successfully connecting the new room to the current room, the room is added to the rooms map, and the roomID is incremented to ensure uniqueness for the next room.
+
+4. Direction Handling and Movement:
+Q6: How does the program move the player in response to commands like "n", "e", "s", and "w"?
+A6: The "n", "e", "s", and "w" commands are used to move the player in the respective direction. The program checks if there is a valid room in the specified direction (e.g., currentRoom->north()), and if a room exists in that direction, the player is moved to that room. The currentRoom pointer is updated to reflect the new room.
+5. Error Handling and Input Validation:
+Q7: How does the program handle invalid input when a player is asked to specify a direction (e.g., for connecting rooms)?
+
+A7: The program ensures that the direction input is one of the valid directions (N, S, E, W) by converting the input to uppercase using transform(). If the input does not match a valid direction, the program displays an error message ("Invalid direction.") and prompts the player again.
+
+Q8: What happens if the user inputs an invalid room ID during the "jump" command?
+
+A8: If the user inputs an invalid room ID (i.e., a room ID that does not exist in the rooms map), the program will display an error message ("Invalid room ID.") and the player will not be able to jump to a new room.
+
+6. Game Save and Load Mechanism:
+Q9: How does the "save" command work in the game?
+
+A9: The "save" command calls the saveGame() function, which saves the current game state (rooms, current room, objects, mobiles, etc.) to a file (e.g., "game_save.txt"). This allows the game to persist between sessions.
+
+Q10: Explain the role of the "load" command in the game. How does it affect the game state?
+
+A10: The "load" command calls the loadGame() function, which loads the game state from a previously saved file (e.g., "game_save.txt") and restores the rooms, objects, mobiles, and player state to how it was when the game was saved.
+
+7. Mobiles and Random Actions:
+Q11: How do mobiles interact with the player and the game world in this program?
+
+A11: Mobiles can either follow other mobiles (e.g., following the player or another mobile) or move randomly between rooms. They can also pick up and drop objects based on random chances (20% chance). If a mobile moves to or leaves the player's current room, a message is displayed.
+
+Q12: How does the program decide whether a mobile will pick up or drop an object?
+
+A12: The program uses a random number generator (rand() % 100 < 20) to give a 20% chance that a mobile will attempt to pick up or drop an object. If the mobile can pick up objects (canPickupObjects), it may either pick up or drop an object in the current room.
+
+8. Memory Management and Cleanup:
+Q13: What happens when the program ends in terms of memory management?
+A13: At the end of the program, the memory allocated for the rooms, objects, and mobiles is freed using delete. This ensures that no memory is leaked when the program terminates.
+9. Inventory Management:
+Q14: How does the "inventory" command function in the game?
+A14: The "inventory" command displays the items currently in the player's inventory. If the inventory is empty, it displays "You are not carrying anything." Otherwise, it lists the names of the objects the player is carrying.
+10. General Understanding:
+Q15: Describe the overall flow of the game loop. What happens during each iteration?
+A15: During each iteration of the game loop, the program waits for the player's command, processes the command, and updates the game state accordingly. After processing the command, mobiles perform their actions (following, picking up, dropping, or moving randomly). The game continues until the player quits ("q").
+*/
