@@ -710,7 +710,7 @@ int main() {
                     // roomID is incremented after assignment to ensure uniqueness for next room
                     // referenced post incrementing from geeksforgeeks.com
                     // if roomID starts at 5 then first value is 5 goes to 6
-                    rooms[roomID++] = newRoom;
+                    rooms[roomID++] = newRoom; // = newRoom is initially 1 room Id increment 2 kitchen 2, living room 3
                     cout<<"Room connection ok\n";
                 } else {
                     cout<<"Room connection failed.\n";
@@ -769,13 +769,21 @@ int main() {
                 }
                 // convert user input to an integer for room selection
                 // string to an integer ('rc') representing room ID
-                int rc = atoi(userChoice.c_str());
-                if(rooms.find(rc)==rooms.end()){
-                    cout<<"Invalid room.\n";
+                // referenced ASCII guide c++ cplusplus.com
+                int rc = atoi(userChoice.c_str()); // atoi ASCII TO INT referenced from cplusplus.com
+                // userChoice.c_str() converts string object into actual int value
+                // returns 0 if non numeric chars are found
+                if(rooms.find(rc) == rooms.end()){ // rooms from map<int, Room*>, rom ids are int values
+                //.find(rc) search for room id and checks existence == .end indicating nothing
+                    cout << "Invalid room.\n";
                     continue; 
                 }
                 // get room associated with entered room ID
-                Room* target=rooms[rc];
+                // referenced pointers from w3 schools
+                Room* target = rooms[rc]; // gets value for room*
+                // can be used as room* target = rooms[101]
+                                          // rooms[rc] accesses value in map
+                                          // if rc is valid room id in map, target is set to ptr pointing to room object
 
                 cout<<"Which exit of the new room leads to this room? (N,S,E,W):    <<<< ";
                 if(!getline(cin,userChoice)){
@@ -794,7 +802,8 @@ int main() {
                     cout<<"Invalid direction.\n";
                     continue;
                 }
-
+                
+                //                     (direction player goes, ptr to room,inidicates if go north there is exit south)
                 if(currentRoom->connect(exitDir,target,toExitDir)) {
                     cout<<"Room connection ok\n";
                 } else {
@@ -810,7 +819,9 @@ int main() {
                 continue;
             }
             // convert the users input (string to int) represent room ID
-            int j=atoi(jumpIDInput.c_str());
+            // string to int conversion geeksforgeeks.com
+            int j= atoi(jumpIDInput.c_str()); // atoi scans left to right, stops when non num encounter
+            // j will be 45 specifying room to jump to
             // check if room ID exists in 'rooms' map
             if(rooms.find(j) != rooms.end()) {
                 // currentRoom updates ptr to room corresponding to entered room ID
@@ -836,7 +847,7 @@ int main() {
             else {
                 cout<<"You are carrying:\n";
                 // Iterate through players inventory and print name of each object
-                for (auto* obj: playerInventory) {
+                for (auto* obj: playerInventory) { // iterates through vector
                     cout<<"  "<<obj->name<<"\n";
                 }
             }
@@ -848,17 +859,21 @@ int main() {
         } else if (cmdLower=="get") {
             // get <object>
             // remove any leading spaces from the remaining input string 'line'
+            // trim a string in c++ techiedelight.com
             if(!line.empty() && line.front()==' ') line.erase(line.begin());
-            if(line.empty()) {
+            if(line.empty()) { // nothing there
                 cout<<"Get what?\n";
             }
             else
-            {
+            {   
+                // if line isnt empty the user provided object name, calls attemptGet()
+                // this passes current room and object name (line) to pickup obj
                 // call attemptGet to pickup object from currentRoom
                 attemptGet(currentRoom,line);
             }
         } else if (cmdLower=="drop") {
             // drop <object>
+            // check line not empty, checks first char for space and remove if so
             if(!line.empty() && line.front()==' ') line.erase(line.begin());
             if(line.empty()){
                 cout<<"Drop what?\n";
@@ -871,7 +886,9 @@ int main() {
         } else if (cmdLower=="look") {
             // look <object/mobile>
             if(!line.empty() && line.front()==' ') line.erase(line.begin());
-            if(line.empty()) {cout<<"Look at what?\n";} 
+            if(line.empty()) {
+                cout<<"Look at what?\n";
+            } 
             else {
                 // lookTarget function to display details about target
                 lookTarget(currentRoom,line);
@@ -881,18 +898,20 @@ int main() {
             // declare ptr 'next' to hold the room in specified direction
             Room* next=nullptr;
             // determine which direction the user wants to move and set `next` to the room in that direction
-            if(cmdLower=="n") next=currentRoom->north();
-            else if(cmdLower=="e") next=currentRoom->east();
-            else if(cmdLower=="s") next=currentRoom->south();
-            else if(cmdLower=="w") next=currentRoom->west();
+            if(cmdLower=="n") next = currentRoom->north();
+            else if(cmdLower=="e") next = currentRoom->east();
+            else if(cmdLower=="s") next = currentRoom->south();
+            else if(cmdLower=="w") next = currentRoom->west();
 
             // If a valid room exists in the chosen direction, update the `currentRoom` pointer to that room
             if(next){
                 currentRoom=next;
                 // update currentRoomID to reflect new rooms ID
-                for (auto&[id,rm]:rooms){
-                    if (rm==currentRoom){
-                        currentRoomID=id;
+                // iteration through all rooms in rooms map
+                for (auto&[id,rm]:rooms) { //rooms is map storing objects
+                                           // structured id here gets rooms id and rm gets object(value) associated with room id
+                    if (rm == currentRoom) { // check if rm ptr is same as currentRoom
+                        currentRoomID=id; // if true current room has been found in rooms map to save id of current room
                         break;
                     }
                 }
@@ -907,18 +926,19 @@ int main() {
         // After command, mobiles move/follow
         // iterate through all mobiles someMob in the game using allMobiles vector
         // someMob is a ptr to each mobile object 
+        // syntax for (declaration : container(vector))
         for (auto* someMob: allMobiles) {
             // store the current room of the mobile before it potentially moves
             // oldRoom keeps track of where the mobile was
-            Room* oldRoom = someMob->currentRoom;
+            Room* oldRoom = someMob->currentRoom; // someMob->currentRoom retrieve val stored in currentRoom of someMob object
             // check if mobile is set to follow another mobile folowing and if it is allowed to follow canFollow
             if (someMob->following && someMob->canFollow) {
                 // store the mobiles current room before following to check if it changes
-                Room* old=someMob->currentRoom;
+                Room* old = someMob->currentRoom;
                 // followTarget method to move the mobile to the room it is following
                 someMob->followTarget();
                 // check if the mobiles room has changed after following its target
-                if(someMob->currentRoom!=old){
+                if(someMob->currentRoom != old){
                     // if the mobile has entered the players current room
                     if(someMob->currentRoom==currentRoom) {
                         // print message that mobile has arrived in players current room, following target
@@ -930,10 +950,11 @@ int main() {
                 }
             // Rand action logic
             // if mobile is not following another entity, it decides to either pick/drop an obj or move rand
+            // understanding logic behind random number generation devcodef1.com
             } else {
                 // 20% chance mob tries to pick/drop objects, else moves randomly
                 // check if the mobile is capable of picking up objects canPickupObjects and if it randomly chooses to do so (20% chance)
-                if(someMob->canPickupObjects && (rand()%100<20)) {
+                if(someMob->canPickupObjects && (rand()%100<20)) { // 0 and 99 and checks less than 20 for 20% chance of true
                     // call tryPickupOrDrop method to handle picking up or dropping objects
                     someMob->tryPickupOrDrop();
                 } else { // move randomly to connected room 
