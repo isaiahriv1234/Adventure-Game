@@ -446,49 +446,59 @@ void attemptDrop(Room* currentRoom,const string& objectName) {
 
 // Saving and loading features
 // used cplusplus.com as reference
+// tutorial for saving and loading in c++ from youtube
 // save game 
-void saveGame(map<int,Room*>& rooms, 
-              Room* currentRoom,const string& filename,
-              const vector<Object*>& allObjects,
-              const vector<Mobile*>& allMobiles,
-              int currentRoomID) {
+// (map stores unique Ids to, Room* being accessed by poiner to store memory in room)
+// reference means any change modified rooms 
+void saveGame(map<int, Room*>& rooms, 
+              Room* currentRoom,const string& filename,//contains room function operates on, filename contains data for room state
+              const vector<Object*>& allObjects, // list of all objects placed in room
+              const vector<Mobile*>& allMobiles, // list of mobiles in specific room
+              int currentRoomID) { // id used to identify and interact with specific room
     // open file to save game data 
     // ofstream creates output stream object named outFile associated with fileName
     // opens file in write mode 
-    ofstream outFile(filename);
-    if(!outFile) {
+    ofstream outFile(filename); //output file(object)
+    if(!outFile) { // if no file (false) basically
         cout<<"Error saving the game.\n"; 
         return;
     }
 
     // saving room data
     // [id the key from rooms map(an int), rm the value from rooms map(room*)]
-    for (auto& [id,rm]: rooms) { // loop through all rooms in the map
+    for (auto& [id,rm]: rooms) { // loop through all rooms in the map, references rooms ptr
         // write the room ID, name, description to the file 
+        //rm->name() accesses room object and calls name
         outFile<<"ROOM|"<<id<<"|"<<rm->name()<<"|"<<rm->description()<<"\n";
     }
     outFile<<"END_ROOMS\n"; // mark the end of the room data in the file
 
     // save connections between rooms 
+    // range based for loop referenced from geekforgeeks.com
     for (auto& [id, rm] : rooms) { // loop through all rooms in map
-        // initialize directions with -1 meaning no connection
+        // initialize directions with -1 meaning no connection because 0=North, etc..
         int n = -1, e = -1, s = -1, w = -1;  
+        // handles north->room102
         for (auto&[oid, oroom] : rooms) { // check each room to find connections
             // check if rm's north/east/south/west matches oroom
-            if (rm->north()==oroom) n=oid; // If the current room's north points to oroom, set n to oroom's ID
-            if (rm->east()==oroom) e=oid;
-            if (rm->south()==oroom) s=oid;
-            if (rm->west()==oroom) w=oid;
+            //rm->north() checks what room is connected to north of current rm 
+            if (rm->north()==oroom) //oid - other room id, oroom - reference to room object
+            n=oid; // If the current room's north points to oroom, set n to oroom's ID
+            if (rm->east()==oroom) // calls east to return ptr or null if none
+            e=oid;
+            if (rm->south()==oroom) // would match oroom with ID 101
+            s=oid; // s variable updated s = 101
+            if (rm->west()==oroom) //compare room ptrs to see if rooms connected
+            w=oid;
         }
-        // write connection line to the file
+        // write connection line to the file after loops get final value
+        // no connetion print -1
         outFile << "CONN|" << id << "|" << n << "|" << e << "|" << s << "|" << w << "\n";
     }
     // mark the end of connection data in the file
     outFile << "END_CONNS\n";
     // save the Id of current room
     outFile << "CURRENT_ROOM|" << currentRoomID << "\n";
-    // write placeholder tags for other data that could be added later
-    outFile<<"END_OBJECTS\nEND_ROOM_OBJECTS\nEND_PLAYER_INV\nEND_MOBILES\nEND_MOB_INV\n";
     // test confirmation
     cout<<"Game saved.\n";
 }
@@ -501,6 +511,7 @@ void loadGame(map<int,Room*>& rooms,Room*& currentRoom,const string& filename,
 
 int main() {
     // Use current time for random seed each time program runs
+    // w3 schools c++ rand() function document as reference
     srand((unsigned)time(NULL));
 
     cout<<"Enable builder mode? (y/n):                                        <<<< ";
@@ -567,7 +578,7 @@ int main() {
             // finds position of first space character in input string 'line'
             size_t pos = line.find(' ');
             if(pos == string::npos) { // check if no space found in string
-                command = line;// if no space exists, assign entire 'line'
+                command = line; // if no space exists, assign entire line is treated as command assign second part to line variable
                 line = ""; // set 'line' to empty string
             } else {
                 // if space found in string
@@ -575,12 +586,17 @@ int main() {
                 // extract substring from start of 'line' to first space
                 // assign substring to 'command' (first word in input)
                 line = line.substr(pos+1); // extract substring from character after first space
-            }
+            }   // example go north would be north
         }
         
         // copy of command and cmdLower holds lowercase
         string cmdLower = command;
         // case comparison for lowercase
+        // transform allows operations for elements in a range
+        // syntax (start, end, result, operation)
+        // example: go north
+        // .begin points to g .end to to
+        // referenced tolower, toupper documentation w3 schools
         transform(cmdLower.begin(), cmdLower.end(), cmdLower.begin(), ::tolower);
         
         if(cmdLower=="q") {
@@ -589,15 +605,15 @@ int main() {
         } else if (cmdLower=="?") {
             displayHelp();
         } else if (cmdLower=="l") {
-            lookRoom(currentRoom);
+            lookRoom(currentRoom); // ptr reference to object (currentRoom) display info on currentRoom
         } else if (cmdLower=="r") {
-            if(!builderMode) {
+            if(!builderMode) { // ! if builerMode is false
                 cout<<"Builder mode is OFF.\n";
             }
             else {
                 cout<<"Enter a new name for this room and hit <enter>:                    <<<< ";
                 string newName;
-                if(!getline(cin,newName)){
+                if(!getline(cin,newName)){ // ! if error reading input //read from file
                     cout<<"Error reading name.\n";
                 }else {
                     currentRoom->set_name(newName);
@@ -636,7 +652,7 @@ int main() {
                 // uppercase comparison for case sensitivity
                 transform(directionChoice.begin(), directionChoice.end(), directionChoice.begin(), ::toupper);
                 
-                // exitDit of type Direction
+                // exitDit of type Direction from enum
                 // stores direction chosen by user mapped to enum value
                 Direction exitDir;
                 // asign to enum values
@@ -692,6 +708,8 @@ int main() {
                 if(currentRoom->connect(exitDir,newRoom,toExitDir)) {
                     // adds newly created room to 'rooms' map, using current 'roomID'
                     // roomID is incremented after assignment to ensure uniqueness for next room
+                    // referenced post incrementing from geeksforgeeks.com
+                    // if roomID starts at 5 then first value is 5 goes to 6
                     rooms[roomID++] = newRoom;
                     cout<<"Room connection ok\n";
                 } else {
