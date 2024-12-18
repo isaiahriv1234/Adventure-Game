@@ -327,12 +327,12 @@ void lookRoom(Room* room) { // take ptr to a room object
 // (ptr to currentRoom user is in, name of target to inspect)
 void lookTarget(Room* currentRoom,const string& target) {
     // copies input target into local variable  
-    string t = target;
+    string t = target; // t is like a temp variable for case conversion
     // search case sensitive ::to lower gets lowercase
     transform(t.begin(), t.end(), t.begin(), ::tolower);
     // check objects in room
     // loop through all objects in current room
-    for (auto* obj: currentRoom->getObjects()) {
+    for (auto* obj: currentRoom->getObjects()) { // auto obj creates ptr to each individual inside, in this case the getObjects() container
         string oname = obj->name; // retrieve name of current object
         //oname.begin points to first char in string
         //oname.begin in 3rd position stores result
@@ -340,7 +340,7 @@ void lookTarget(Room* currentRoom,const string& target) {
         // case sensitive comparison for user input
         transform (oname.begin(), oname.end(), oname.begin(), ::tolower);
         // provide info when player requests to look for specified target
-        if(oname==t) {
+        if(oname == t) {
             cout<<obj->description<<"\n";
         return;
         }
